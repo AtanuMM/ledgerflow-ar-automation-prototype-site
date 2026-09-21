@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply border-slate-200; }
+  html { @apply bg-canvas text-ink antialiased; }
+  body { min-width: 320px; min-height: 100vh; font-family: "DM Sans", sans-serif; }
+  h1, h2, h3 { font-family: "Manrope", sans-serif; letter-spacing: -0.025em; }
+  button, input, select, textarea { @apply outline-none; }
+}
+
+@layer components {
+  .panel { @apply rounded-2xl border border-slate-200/80 bg-white shadow-soft; }
+  .field { @apply mt-2 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-800 transition placeholder:text-slate-400 focus:border-moss-500 focus:ring-4 focus:ring-moss-50; }
+  .label { @apply text-sm font-semibold text-slate-700; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 active:scale-[.98]; }
+  .btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 active:scale-[.98]; }
+  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900; }
+  .table-head { @apply px-5 py-3 text-left text-[11px] font-bold uppercase tracking-[.08em] text-slate-400; }
+  .table-cell { @apply border-t border-slate-100 px-5 py-4 text-sm; }
+}
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: #cbd5e1; background-clip: padding-box; }

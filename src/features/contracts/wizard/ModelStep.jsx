@@ -1,0 +1,7 @@
+import { Check, FileCheck2, FileText, Zap } from "lucide-react";
+
+function ModelStep({ form, setForm }) {
+  const models = [["Project", "Milestone-based service delivery", "Structured, flexible billing", FileCheck2], ["SaaS", "Recurring subscription billing", "Monthly, quarterly or annual", Zap], ["License", "Software licensing & AMC", "Perpetual or term-based", FileText]];
+  return <div><div className="mb-6 rounded-xl bg-slate-50 p-4 text-sm text-slate-600"><b>Choose carefully.</b> This controls the commercial fields and invoice format used later.</div><div className="grid gap-4 md:grid-cols-3">{models.map(([m, d, sub, Icon]) => <button key={m} onClick={() => setForm({ ...form, model: m })} className={`relative rounded-2xl border-2 p-6 text-left transition hover:-translate-y-0.5 hover:shadow-lg ${form.model === m ? "border-moss-500 bg-moss-50/70 shadow-md shadow-moss-100" : "border-slate-200 bg-white"}`}><div className={`mb-8 grid h-12 w-12 place-items-center rounded-2xl ${form.model === m ? "bg-moss-600 text-white" : "bg-slate-100 text-slate-600"}`}><Icon size={23} /></div><h3 className="text-lg font-bold">{m === "SaaS" ? "SaaS subscription" : m}</h3><p className="mt-2 text-sm text-slate-600">{d}</p><p className="mt-1 text-xs text-slate-400">{sub}</p>{form.model === m && <span className="absolute right-4 top-4 grid h-6 w-6 place-items-center rounded-full bg-moss-600 text-white"><Check size={14} /></span>}</button>)}</div></div>;
+}
+export default ModelStep;

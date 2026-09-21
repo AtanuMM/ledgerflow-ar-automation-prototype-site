@@ -1,0 +1,7 @@
+import Badge from "../../../components/ui/Badge";
+
+function ReviewStep({ form }) {
+  const blocks = [["Basic details", [["Customer", form.customer], ["Location", `${form.state || ""}, ${form.country}`], ["Billing entity", form.entity], ["Term", "01 Oct 2026 — 30 Sep 2027"]]], ["Commercial terms", [["Billing model", form.model], ["Contract value", form.model === "Project" ? "₹32,50,000" : form.model === "SaaS" ? "₹18,00,000 / year" : "€125,000"], ["Billing", form.model === "Project" ? "3 milestone rules" : form.model === "SaaS" ? "Annual · 60 seats" : "Perpetual + 18% AMC"]]], ["Tax & notifications", [["Tax treatment", form.country !== "India" ? "Export of Service · 0%" : form.state === "West Bengal" ? "CGST 9% + SGST 9%" : "IGST 18%"], ["Notification rules", "3 active rules"], ["Approver", "Finance Approver"]]]];
+  return <div className="grid gap-4 lg:grid-cols-3">{blocks.map(([title, rows], i) => <div className="rounded-2xl border p-5" key={title}><div className="mb-5 flex items-center justify-between"><h3 className="font-bold">{title}</h3><button className="text-xs font-bold text-moss-600">Edit</button></div><div className="space-y-4">{rows.map(([a, b]) => <div key={a}><p className="text-xs font-medium text-slate-400">{a}</p><p className="mt-1 text-sm font-semibold text-slate-700">{b}</p></div>)}</div>{i === 0 && <Badge>Ready</Badge>}</div>)}</div>;
+}
+export default ReviewStep;
