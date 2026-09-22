@@ -4,23 +4,13 @@ import Field from "../../../components/ui/Field";
 import Toggle from "../../../components/ui/Toggle";
 import { getMilestoneAmount, getMilestoneValidation } from "../../../utils/milestones";
 
-function getContractTax(form) {
-  if (form.country !== "India") return { label: "Export of Service · 0%", shortLabel: "export tax", rate: 0 };
-  if (form.state === "West Bengal" && form.entity.includes("West Bengal")) {
-    return { label: "CGST 9% + SGST 9%", shortLabel: "CGST + SGST", rate: 18 };
-  }
-  return { label: "IGST 18%", shortLabel: "IGST", rate: 18 };
-}
-
 function formatMoney(amount, currency) {
   const symbols = { INR: "₹", EUR: "€", USD: "$" };
   return `${symbols[currency] || `${currency} `}${Math.round(amount || 0).toLocaleString("en-IN")}`;
 }
 
-function MilestoneCard({ milestone, index, form, tax, update, duplicate, remove, cardRef }) {
+function MilestoneCard({ milestone, index, form, update, duplicate, remove, cardRef }) {
   const amount = getMilestoneAmount(milestone, form.contractValue);
-  const appliedTaxRate = milestone.taxRule === "no-tax" ? 0 : tax.rate;
-  const taxAmount = (amount * appliedTaxRate) / 100;
   return <div ref={cardRef} className="scroll-mt-24 overflow-hidden rounded-2xl border">
     <div className="flex items-center justify-between bg-slate-50 px-5 py-3">
       <div className="flex min-w-0 items-center gap-3">
@@ -57,29 +47,17 @@ function MilestoneCard({ milestone, index, form, tax, update, duplicate, remove,
       <div className="lg:col-span-3">
         <Field label="Computed amount"><div className="field bg-slate-50 font-bold text-slate-700">{formatMoney(amount, form.currency)}</div></Field>
       </div>
-      <div className="lg:col-span-6">
-        <Field label="Tax rule">
-          <select className="field" value={milestone.taxRule} onChange={(event) => update({ taxRule: event.target.value })}>
-            <option value="contract-default">Use contract default · {tax.label}</option>
-            <option value="no-tax">No tax / Nil rated</option>
-            <option value="custom">Custom override</option>
-          </select>
-        </Field>
-      </div>
       <div className="lg:col-span-12">
         <Field label="Completion criteria"><input className="field" value={milestone.completionCriteria} placeholder="What must be completed before invoicing?" onChange={(event) => update({ completionCriteria: event.target.value })} /></Field>
       </div>
     </div>
-    <div className="border-t bg-moss-50/60 px-5 py-3 text-xs font-medium text-moss-700">
-      This rule will create an invoice for {formatMoney(amount, form.currency)} + {formatMoney(taxAmount, form.currency)} {milestone.taxRule === "no-tax" ? "tax" : tax.shortLabel} when the milestone is ready.
-    </div>
+    <div className="border-t bg-slate-50 px-5 py-3 text-xs font-medium text-slate-500">This milestone will create an invoice for {formatMoney(amount, form.currency)} when it is ready.</div>
   </div>;
 }
 
 function ProjectTerms({ form, setForm }) {
   const milestones = form.milestones || [];
   const pendingFocusId = useRef(null);
-  const tax = getContractTax(form);
   const validation = getMilestoneValidation(milestones, form.contractValue);
   const updateForm = (patch) => setForm((current) => ({ ...current, ...patch }));
   const updateMilestone = (id, patch) => updateForm({
@@ -96,7 +74,6 @@ function ProjectTerms({ form, setForm }) {
       basis: "percent",
       value: 0,
       completionCriteria: "",
-      taxRule: "contract-default",
       }],
     });
   };
@@ -138,7 +115,6 @@ function ProjectTerms({ form, setForm }) {
         milestone={milestone}
         index={index}
         form={form}
-        tax={tax}
         update={(patch) => updateMilestone(milestone.id, patch)}
         duplicate={() => duplicateMilestone(milestone)}
         remove={() => removeMilestone(milestone.id)}

@@ -1,14 +1,8 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Building2, FileCog, Hash, Plus, ReceiptText, Send } from "lucide-react";
 import ActionMenu from "../components/ui/ActionMenu";
 import PageHead from "../components/ui/PageHead";
-
-const taxRules = [
-  ["India","West Bengal","CGST + SGST","9% + 9%","Intra-state"],
-  ["India","All other states","IGST","18%","Inter-state from WB"],
-  ["Netherlands","—","Export / VAT","0%","Reverse charge"],
-  ["Germany","—","Export / VAT","0%","Reverse charge"],
-];
+import TaxAdminWorkspace from "../features/tax/components/TaxAdminWorkspace";
 
 const sectionItems = {
   "Billing entities": ["Matrix Media Solutions — India (West Bengal)","Matrix Media — Singapore","Matrix Media — USA"],
@@ -17,16 +11,32 @@ const sectionItems = {
   "Default notifications": ["Milestone due → 7 days before","Invoice generated → Immediately","Contract expiry → 30 days before"],
 };
 
-function SettingsPage({ notify }) {
-  const [section, setSection] = useState("Tax rules");
+const invoiceSections = [
+  { label: "Billing entities", icon: Building2 },
+  { label: "Template mapping", icon: FileCog },
+  { label: "Invoice numbering", icon: Hash },
+  { label: "Default notifications", icon: Send },
+];
+
+function InvoiceSettings({ notify }) {
+  const [section, setSection] = useState("Billing entities");
   const [deleted, setDeleted] = useState([]);
-  const sections = ["Tax rules","Billing entities","Template mapping","Invoice numbering","Default notifications"];
   const remove = (key, label) => {
     setDeleted((items) => [...items, key]);
     notify(`${label} deleted`);
   };
-  const visibleTaxRules = taxRules.filter((rule) => !deleted.includes(`tax-${rule.join("-")}`));
   const visibleItems = (sectionItems[section] || []).filter((item) => !deleted.includes(`${section}-${item}`));
-  return <><PageHead eyebrow="Workspace configuration" title="Tax & invoice rules" desc="Control how LedgerFlow chooses tax treatment and formats every invoice." action={<button onClick={()=>notify("Settings saved")} className="btn-primary">Save changes</button>}/><div className="grid gap-5 lg:grid-cols-[230px_1fr]"><div className="panel h-fit p-2">{sections.map((x)=><button onClick={()=>setSection(x)} key={x} className={`w-full rounded-xl px-3 py-3 text-left text-sm font-semibold ${section===x?"bg-ink text-white":"text-slate-500 hover:bg-slate-50"}`}>{x}</button>)}</div><div className="panel p-5 sm:p-7"><div className="mb-6 flex items-center justify-between"><div><h2 className="text-xl font-bold">{section}</h2><p className="mt-1 text-sm text-slate-400">Editable workspace defaults used across all new contracts.</p></div><button onClick={()=>notify(`New ${section==="Tax rules"?"rule":"item"} ready to configure`)} className="btn-secondary"><Plus size={15}/>Add {section==="Tax rules"?"rule":"item"}</button></div>{section==="Tax rules" ? <div className="overflow-x-auto rounded-xl border"><table className="w-full min-w-[650px]"><thead className="bg-slate-50"><tr>{["Country","State / Region","Tax type","Rate","Notes",""].map((x)=><th className="table-head" key={x}>{x}</th>)}</tr></thead><tbody>{visibleTaxRules.map((r)=>{const key=`tax-${r.join("-")}`;return <tr key={key}>{r.map((x,i)=><td className={`table-cell ${i===0?"font-semibold":"text-slate-500"}`} key={i}>{x}</td>)}<td className="table-cell"><ActionMenu onEdit={()=>notify(`Editing ${r[0]} tax rule`)} onDelete={()=>remove(key, `${r[0]} tax rule`)}/></td></tr>;})}</tbody></table></div> : <div className="space-y-3">{visibleItems.map((x,i)=>{const key=`${section}-${x}`;return <div key={x} className="flex items-center rounded-xl border p-4"><span className="grid h-8 w-8 place-items-center rounded-lg bg-slate-100 text-xs font-bold">{i+1}</span><span className="ml-3 text-sm font-semibold">{x}</span><div className="ml-auto"><ActionMenu onEdit={()=>notify(`Editing ${x}`)} onDelete={()=>remove(key, x)}/></div></div>;})}</div>}</div></div></>;
+  return <div className="grid gap-5 lg:grid-cols-[230px_1fr]"><div className="panel h-fit p-2">{invoiceSections.map(({ label, icon: Icon }) => <button onClick={() => setSection(label)} key={label} className={`flex w-full items-center gap-2 rounded-xl px-3 py-3 text-left text-sm font-semibold ${section === label ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-50"}`}><Icon size={16}/>{label}</button>)}</div>
+    <div className="panel p-5 sm:p-7"><div className="mb-6 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-xl font-bold">{section}</h2><p className="mt-1 text-sm text-slate-400">Invoice defaults preserved separately from tax administration.</p></div><button onClick={() => notify(`New ${section.toLowerCase()} item ready`)} className="btn-secondary"><Plus size={15}/>Add item</button></div>
+      <div className="space-y-3">{visibleItems.map((item, index) => { const key = `${section}-${item}`; return <div key={item} className="flex items-center rounded-xl border p-4"><span className="grid h-8 w-8 place-items-center rounded-lg bg-slate-100 text-xs font-bold">{index + 1}</span><span className="ml-3 text-sm font-semibold">{item}</span><div className="ml-auto"><ActionMenu onEdit={() => notify(`Editing ${item}`)} onDelete={() => remove(key, item)}/></div></div>; })}</div>
+    </div>
+  </div>;
+}
+
+function SettingsPage({ notify }) {
+  const [area, setArea] = useState("tax");
+  return <><PageHead eyebrow="Workspace configuration" title="Tax & invoice settings" desc="Administer tax policy with traceable rules while keeping invoice defaults close at hand." action={<div className="inline-flex rounded-xl border bg-white p-1"><button onClick={() => setArea("tax")} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold ${area === "tax" ? "bg-ink text-white" : "text-slate-500"}`}><ReceiptText size={15}/>Tax admin</button><button onClick={() => setArea("invoice")} className={`rounded-lg px-3 py-2 text-sm font-bold ${area === "invoice" ? "bg-ink text-white" : "text-slate-500"}`}>Invoice defaults</button></div>}/>
+    {area === "tax" ? <TaxAdminWorkspace notify={notify}/> : <InvoiceSettings notify={notify}/>}
+  </>;
 }
 export default SettingsPage;

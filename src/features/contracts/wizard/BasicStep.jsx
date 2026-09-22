@@ -9,7 +9,7 @@ function BasicStep({ form, setForm }) {
     <Field label="Customer country"><select className="field" value={form.country} onChange={(e) => update("country", e.target.value)}><option>India</option><option>Netherlands</option><option>Germany</option><option>Singapore</option><option>USA</option></select></Field>
     {form.country === "India" ? <Field label="Customer state"><select className="field" value={form.state} onChange={(e) => update("state", e.target.value)}><option>Delhi</option><option>West Bengal</option><option>Maharashtra</option><option>Karnataka</option></select></Field> : <Field label="Customer city"><input className="field" placeholder="e.g. Amsterdam" /></Field>}
     <Field label="Billing entity"><select className="field" value={form.entity} onChange={(e) => update("entity", e.target.value)}><option>Matrix Media — India (West Bengal)</option><option>Matrix Media — Singapore</option><option>Matrix Media — USA</option></select></Field>
-    <Field label="Effective date"><input className="field" type="date" defaultValue="2026-10-01" /></Field>
+    <Field label="Effective date"><input className="field" type="date" value={form.effectiveDate} onChange={(e) => update("effectiveDate", e.target.value)} /></Field>
     <Field label="Contract end date"><input className="field" type="date" defaultValue="2027-09-30" /></Field>
   </div>;
 }
